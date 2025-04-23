@@ -1,0 +1,31 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV['DATABASE_HOST'] %>
+  username: <%= ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'] %>
+  pool: 5
+
+development:
+  <<: *default
+  database: facturacion_ocd_development
+
+test:
+  <<: *default
+  database: facturacion_ocd_test
+
+production:
+  <<: *default
+  database: facturacion_ocd
+
+cable:
+  <<: *default
+  database: facturacion_ocd
+
+queue:
+  <<: *default
+  database: facturacion_ocd
+
+cache:
+  <<: *default
+  database: facturacion_ocd

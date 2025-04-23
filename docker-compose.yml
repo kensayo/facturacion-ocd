@@ -12,17 +12,19 @@ services:
 
   facturacion-ocd:
     build: .
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails server -b 0.0.0.0 -p 3000"
     volumes:
-      - .:/app
+      - .:/rails
     ports:
       - "3000:3000"
     depends_on:
       - db
     environment:
       DATABASE_HOST: db
+      DATABASE_PORT: 5432
       DATABASE_USERNAME: postgres
       DATABASE_PASSWORD: password
+      SECRET_KEY_BASE: "eaf94012067095b74138f8e1e08ca612a63ceedb81b6aae94e0944ec69d0280d60278101bf2bf7db4eeba3ad310cc1a7f6cff1061dc382af9ba3d9fb11d7d533"
+      RAILS_ENV: "development"
 
 volumes:
   db_data:
