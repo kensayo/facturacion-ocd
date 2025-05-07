@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  
+  resources :expenses
+  resources :users
+  get    '/login',  to: 'sessions#new'     # Muestra el formulario de login
+  post   '/login',  to: 'sessions#create'  # Procesa el envío del formulario
+  delete '/logout', to: 'sessions#destroy' # Para cerrar sesión
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
