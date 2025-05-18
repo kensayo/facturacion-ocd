@@ -1,24 +1,57 @@
-<% provide(:title, "Log In") %> # Si usas un helper para el título de la página
-<h1>Iniciar Sesión</h1>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <%= stylesheet_link_tag 'application' %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Iniciar Sesión</title>
+</head>
+<body class="text-gray-800">
 
-<div class="row">
-  <div class="col-md-6 col-md-offset-3">
-    <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
-
-      <div class="form-group">
-        <%= f.label :email %>
-        <%= f.email_field :email, class: 'form-control' %>
+<section class="dark:bg-gray-900">
+  <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+    <a href="#" class="flex items-center mb-6 text-2xl font-semibold text-gray-900 dark:text-white">
+      <%= image_tag("ocd-logo.png", width: 200) %>
+    </a>
+    <div class="w-full bg-white rounded-lg shadow dark:border md:mt-0 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+      <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 class="text-xl text-center font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+          Gastos Orden del Carmelo Descalzo de Venezuela
+        </h1>
+        <%= form_with(url: login_path, scope: :session, local: true) do |f| %>
+<!--        <form class="space-y-4 md:space-y-6" action="#">-->
+          <div class="m-3">
+            <%= f.label "Usuario" ,class: 'block mb-2 text-sm font-medium text-gray-900 dark:text-white' %>
+            <%= f.text_field :username ,class: 'bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', placeholder: 'Usuario' %>
+          </div>
+          <div class="m-3">
+            <%= f.label "Contraseña", class: 'block mb-2 text-sm font-medium text-gray-900 dark:text-white' %>
+            <%= f.password_field :password, class: 'bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500', required: true, placeholder: 'Contraseña' %>
+          </div>
+          <div class="flex items-start m-3">
+            <div class="flex justify-center items-center">
+              <div class="flex items-center h-5">
+                <%= f.check_box :remember_me, class: 'w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-primary-600 dark:ring-offset-gray-800'%>
+              </div>
+              <div class="ml-3 text-sm">
+                <%= f.label "Recuerdame", "Recordarme en este equipo" , class: 'class="text-gray-500 dark:text-gray-300'%>
+              </div>
+            </div>
+          </div>
+          <%= f.submit "Iniciar Sesión", class: "text-xl font-bold m-3 w-full text-white btn-default-black hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800" %>
+        <% end %>
       </div>
-
-      <div class="form-group">
-        <%= f.label :password %>
-        <%= f.password_field :password, class: 'form-control' %>
-      </div>
-
-      <%= f.submit "Iniciar Sesión", class: "btn btn-primary" %>
-    <% end %>
-
-    <%# Opcional: enlace a la página de registro si tienes una %>
-    <%# <p>¿Nuevo usuario? <%= link_to "Regístrate ahora!", signup_path %></p> %>
+    </div>
   </div>
-</div>
+</section>
+
+</body>
+
+</body>
+</html>
+
+

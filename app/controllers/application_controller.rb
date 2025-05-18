@@ -9,7 +9,18 @@ class ApplicationController < ActionController::Base # Asegúrate de que tus con
   # Busca y retorna el usuario actualmente logueado (si existe)
   # Usa memoización (@current_user) para evitar consultas repetidas a la base de datos en la misma petición
   def current_user
-    @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
+    if session[:user_id]
+      @current_user ||= User.find_by(id: session[:user_id])
+    elsif cookies.signed[:user_id]
+      user = User.find_by(id: cookies.signed[:user_id])
+      # Verifica si el usuario existe y si el token en la cookie coincide con el digest en la BD
+      if user && user.authenticated?(cookies[:remember_token])
+        # Usuario autenticado vía cookie permanente:
+        session[:user_id] = user.id # Restablece la sesión estándar para futuras peticiones
+        @current_user = user # Establece @current_user
+      end
+    end
+    @current_user
   end
 
   # Retorna true si hay un usuario logueado, false en caso contrario

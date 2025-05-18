@@ -6,83 +6,8 @@
   <title>Registro de Caja</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <style>
-      /* Custom Styles (Optional) */
-      body {
-          font-family: 'Inter', sans-serif; /* Using Inter font from Tailwind defaults */
-          background-color: #f0f4f8; /* Light pastel background */
-      }
-      .pastel-blue { background-color: #e0f2fe; }
-      .pastel-green { background-color: #dcfce7; }
-      .pastel-yellow { background-color: #fef9c3; }
-      .pastel-purple { background-color: #f3e8ff; }
-      .table-header-sortable {
-          cursor: pointer;
-          transition: color 0.2s ease-in-out;
-      }
-      .table-header-sortable:hover {
-          color: #3b82f6; /* Blue-500 */
-      }
-      .table-header-sortable .sort-icon {
-          opacity: 0.5;
-          margin-left: 4px;
-          transition: opacity 0.2s ease-in-out;
-      }
-      .table-header-sortable:hover .sort-icon {
-          opacity: 1;
-      }
-      /* Ensure table layout is consistent */
-      table {
-          table-layout: fixed; /* Helps with consistent column widths */
-          width: 100%;
-      }
-      th, td {
-          word-wrap: break-word; /* Prevent long text from breaking layout */
-          padding: 12px 8px; /* Consistent padding */
-      }
-      /* Responsive adjustments */
-      @media (max-width: 768px) {
-          /* Stack form elements */
-          #transaction-form > div {
-              flex-direction: column;
-              align-items: stretch;
-          }
-          #transaction-form label {
-              margin-bottom: 4px;
-          }
-          #transaction-form input,
-          #transaction-form select,
-          #transaction-form textarea {
-              width: 100%;
-          }
-          /* Make table scrollable horizontally on small screens */
-          .table-container {
-              overflow-x: auto;
-          }
-          table {
-              min-width: 500px; /* Adjust min-width after removing columns */
-          }
-          /* Adjust padding/margins for smaller screens */
-          .container {
-              padding: 1rem;
-          }
-          .balance-section div {
-              margin-bottom: 0.5rem;
-          }
-          /* Adjust button text visibility on smaller screens if needed */
-          .action-button span {
-              /* display: none; */ /* Uncomment to hide text on very small screens */
-          }
-          /* Ensure buttons align right on small screens too */
-          .action-buttons-container {
-              width: 100%; /* Make button container full width on small screens */
-              justify-content: flex-end; /* Keep buttons aligned right */
-          }
-          .search-container {
-              width: 100%; /* Make search container full width on small screens */
-          }
-      }
-  </style>
+  <%= stylesheet_link_tag 'application' %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
   <link rel="preconnect" href="https://rsms.me/">
   <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 </head>
@@ -97,6 +22,7 @@
     </h1>
     <div class="text-sm text-gray-500">
       <i class="fas fa-user mr-1"></i>Registrado por: <span id="user-name" class="font-medium"><%= current_user.full_name %></span>
+      <%= button_to 'Cerrar Sesion', logout_path, method: :delete %>
     </div>
   </header>
 
@@ -109,7 +35,7 @@
       <h3 class="text-sm font-medium text-green-800">Saldo EUR</h3>
       <p id="balance-eur" class="text-xl font-semibold text-green-900">€0.00</p>
     </div>
-    <div class="p-4 pastel-yellow rounded-lg shadow text-center">
+    <div class="p-4 pastel-yellow rounded-lg shadow text-center" onclick="mostrarHolaMundo()">
       <h3 class="text-sm font-medium text-yellow-800">Saldo VES</h3>
       <p id="balance-ves" class="text-xl font-semibold text-yellow-900">Bs. 0.00</p>
     </div>
@@ -125,13 +51,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <label for="date" class="block text-sm font-medium text-gray-600 mb-1">Fecha</label>
-          <input type="date" id="date" name="date" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+          <input type="date" id="date" value="<%= Date.today.strftime('%Y-%m-%d') %>" name="date" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
         </div>
-        <div>
-          <label for="operator" class="block text-sm font-medium text-gray-600 mb-1">Operador</label>
-          <select id="operator" name="operator" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">
-          </select>
-        </div>
+<!--        <div>-->
+<!--          <label for="operator" class="block text-sm font-medium text-gray-600 mb-1">Operador</label>-->
+<!--          <select id="operator" name="operator" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">-->
+<!--          </select>-->
+<!--        </div>-->
         <div>
           <label for="type" class="block text-sm font-medium text-gray-600 mb-1">Tipo</label>
           <select id="type" name="type" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">
@@ -142,10 +68,6 @@
         <div class="md:col-span-2 lg:col-span-1">
           <label for="description" class="block text-sm font-medium text-gray-600 mb-1">Descripción</label>
           <input type="text" id="description" name="description" required placeholder="Ej: Venta del día, Compra de papelería" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-        </div>
-        <div class="md:col-span-2">
-          <label for="observations" class="block text-sm font-medium text-gray-600 mb-1">Observaciones</label>
-          <textarea id="observations" name="observations" rows="2" placeholder="Detalles adicionales (opcional)" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
         </div>
 
         <div>
@@ -167,6 +89,10 @@
         </div>
       </div>
 
+      <div class="md:col-span-3">
+        <label for="observations" class="block text-sm font-medium text-gray-600 mb-1">Observaciones</label>
+        <textarea id="observations" name="observations" rows="2" placeholder="Detalles adicionales (opcional)" class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"></textarea>
+      </div>
       <div class="flex justify-end pt-4">
         <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out">
           <i class="fas fa-save mr-2"></i>Guardar Registro
@@ -233,15 +159,32 @@
 
 <script>
     // --- Mock Data ---
-    let transactions = [
-        // Sample data (can be replaced by backend data)
-        { id: 1, date: '2024-04-22', description: 'Venta inicial', observations: 'Primera venta del día', operator: 'Ana', type: 'income', currency: 'USD', rate: 1, amount: 150.00 },
-        { id: 2, date: '2024-04-22', description: 'Compra de café', observations: 'Para la oficina', operator: 'Luis', type: 'expense', currency: 'EUR', rate: 0.92, amount: 5.50 },
-        { id: 3, date: '2024-04-23', description: 'Pago proveedor X', observations: 'Factura #123', operator: 'Ana', type: 'expense', currency: 'USD', rate: 1, amount: 75.20 },
-        { id: 4, date: '2024-04-23', description: 'Servicio de limpieza', observations: '', operator: 'Carlos', type: 'expense', currency: 'COP', rate: 3900, amount: 50000.00 },
-        { id: 5, date: '2024-04-24', description: 'Ingreso por servicio Y', observations: 'Cliente Z', operator: 'Luis', type: 'income', currency: 'VES', rate: 36.5, amount: 1800.00 },
-    ];
-    let operators = ['Ana', 'Luis', 'Carlos', 'Maria', 'Pedro']; // Editable list (editing not implemented in v1)
+    // let transactions = [
+    //     // Sample data (can be replaced by backend data)
+    //     { id: 1, date: '2024-04-22', description: 'Venta inicial', observations: 'Primera venta del día', operator: 'Ana', type: 'income', currency: 'USD', rate: 1, amount: 150.00 },
+    //     { id: 2, date: '2024-04-22', description: 'Compra de café', observations: 'Para la oficina', operator: 'Luis', type: 'expense', currency: 'EUR', rate: 0.92, amount: 5.50 },
+    //     { id: 3, date: '2024-04-23', description: 'Pago proveedor X', observations: 'Factura #123', operator: 'Ana', type: 'expense', currency: 'USD', rate: 1, amount: 75.20 },
+    //     { id: 4, date: '2024-04-23', description: 'Servicio de limpieza', observations: '', operator: 'Carlos', type: 'expense', currency: 'COP', rate: 3900, amount: 50000.00 },
+    //     { id: 5, date: '2024-04-24', description: 'Ingreso por servicio Y', observations: 'Cliente Z', operator: 'Luis', type: 'income', currency: 'VES', rate: 36.5, amount: 1800.00 },
+    // ];
+    let transactions = <%=
+        Expense.all.map do |expense|
+            {
+                id: expense.id,
+                date: expense.date,
+                description: expense.description,
+                observations: expense.details,
+                operator: expense.user_id,
+                type: 'expense',
+                currency: expense.coin_type,
+                rate: expense.exchange_rate,
+                amount: expense.amount
+        }
+        end.to_json.html_safe
+     %>;
+
+
+    //let operators = ['Ana', 'Luis', 'Carlos', 'Maria', 'Pedro']; // Editable list (editing not implemented in v1)
     let nextId = 6; // Simple ID generation for mock data
     let currentSort = { column: 'date', direction: 'desc' }; // Default sort
 
@@ -301,19 +244,19 @@
 
     // --- Core Functions ---
 
-    function populateOperators() {
-        operatorSelect.innerHTML = ''; // Clear existing options
-        operators.forEach(op => {
-            const option = document.createElement('option');
-            option.value = op;
-            option.textContent = op;
-            operatorSelect.appendChild(option);
-        });
-        // Set default selected operator (e.g., the first one or based on logged-in user)
-        if (operators.length > 0) {
-            operatorSelect.value = operators[0];
-        }
-    }
+    // function populateOperators() {
+    //     operatorSelect.innerHTML = ''; // Clear existing options
+    //     operators.forEach(op => {
+    //         const option = document.createElement('option');
+    //         option.value = op;
+    //         option.textContent = op;
+    //         operatorSelect.appendChild(option);
+    //     });
+    //     // Set default selected operator (e.g., the first one or based on logged-in user)
+    //     if (operators.length > 0) {
+    //         operatorSelect.value = operators[0];
+    //     }
+    // }
 
     function renderTransactions(filteredTransactions = transactions) {
         transactionList.innerHTML = ''; // Clear existing rows
@@ -408,7 +351,7 @@
         // Reset form
         form.reset();
         dateInput.valueAsDate = new Date(); // Reset date to today
-        operatorSelect.value = operators[0]; // Reset operator to default
+        #operatorSelect.value = operators[0]; // Reset operator to default
     }
 
     function filterAndRender() {

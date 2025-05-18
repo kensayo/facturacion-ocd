@@ -3,6 +3,16 @@
 <%= render @expense %>
 
 <div>
+  <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">${@expense.date}</td>
+  <td class="px-3 py-2 text-sm text-gray-700">${@expense.description}</td>
+  <td class="px-3 py-2 text-center text-sm text-gray-500">${@expense.currency}</td>
+  <td class="px-3 py-2 text-right text-sm ${amountCellClass}">
+    ${@expense.type === 'expense' ? '-' : ''}${formatCurrency(@expense.amount, @expense.currency)}
+  </td>
+  <td class="px-3 py-2 text-center text-sm">
+    <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick=""><i class="fas fa-edit"></i></button>
+    <button class="text-red-500 hover:text-red-700" title="Eliminar" onclick=""><i class="fas fa-trash"></i></button>
+  </td>
   <%= link_to "Edit this expense", edit_expense_path(@expense) %> |
   <%= link_to "Back to expenses", expenses_path %>
 
