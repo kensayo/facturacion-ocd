@@ -24,7 +24,7 @@ class ExpensesController < ApplicationController
     @expense = Expense.new(expense_params)
 
     if @expense.save
-      redirect_to @expense, notice: "Expense was successfully created."
+      redirect_to @expense, notice: 'Expense was successfully created.'
     else
       render :new, status: :unprocessable_entity
     end
@@ -33,7 +33,7 @@ class ExpensesController < ApplicationController
   # PATCH/PUT /expenses/1
   def update
     if @expense.update(expense_params)
-      redirect_to @expense, notice: "Expense was successfully updated.", status: :see_other
+      redirect_to @expense, notice: 'Expense was successfully updated.', status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -42,7 +42,7 @@ class ExpensesController < ApplicationController
   # DELETE /expenses/1
   def destroy
     @expense.destroy!
-    redirect_to expenses_path, notice: "Expense was successfully destroyed.", status: :see_other
+    redirect_to expenses_path, notice: 'Expense was successfully destroyed.', status: :see_other
   end
 
   private

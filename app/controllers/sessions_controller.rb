@@ -35,7 +35,7 @@ class SessionsController < ApplicationController
       # flash[:success] = "¡Bienvenido de nuevo, #{user.name}!"
 
       # 3. Redirige a alguna página (ej: página principal, perfil del usuario)
-      redirect_to expenses_path # Cambia root_url por la ruta que desees
+      redirect_to dashboard_index_path # Cambia root_url por la ruta que desees
     else
       # Fallo en el login:
       # 1. Muestra un mensaje de error que solo dure en esta petición (flash.now)
@@ -61,6 +61,6 @@ class SessionsController < ApplicationController
     # flash[:success] = "Sesión cerrada correctamente."
 
     # Redirige a la página principal o a la página de login
-    redirect_to login_path, status: :see_other # status: :see_other (303) es el estándar después de un DELETE que redirige
+    redirect_to root_path, status: :see_other # status: :see_other (303) es el estándar después de un DELETE que redirige
   end
 end

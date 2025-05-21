@@ -1,7 +1,7 @@
 class CreateExpenses < ActiveRecord::Migration[8.0]
   def change
     create_table :expenses do |t|
-      t.text :coin_type
+      t.text :currency
       t.float :amount
       t.date :date
       t.string :description
