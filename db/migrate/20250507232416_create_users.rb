@@ -5,6 +5,7 @@ class CreateUsers < ActiveRecord::Migration[8.0]
       t.text :name
       t.text :lastname
       t.date :birthdate
+      t.string :user_role
       t.string :remember_digest
       t.string :password_digest
 
@@ -12,5 +13,7 @@ class CreateUsers < ActiveRecord::Migration[8.0]
 
       t.references :house, foreign_key: true
     end
+
+    add_index :users, :username, unique: true
   end
 end

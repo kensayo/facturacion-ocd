@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
 
-  belongs_to :house, optional: true
+  belongs_to :account, optional: true
   # GET /users
   def index
     @users = User.all

@@ -1,13 +1,11 @@
 class User < ApplicationRecord
-  
   has_secure_password
-  
+
   belongs_to :house
   validates :house, presence: true
-  
-  has_many :expenses, dependent: :nullify
-  validates :expenses, presence: true
-  
+
+  has_many :transactions, dependent: :nullify
+
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   attr_accessor :remember_token
 

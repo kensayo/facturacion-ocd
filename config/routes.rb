@@ -1,6 +1,6 @@
 Rails.application.routes.draw do
 
-  resources :expenses
+  resources :transactions
   root 'dashboard#index'
   get '/login',  to: 'sessions#new'
   post   '/login',  to: 'sessions#create'  # Procesa el envío del formulario

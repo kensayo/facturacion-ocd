@@ -29,5 +29,12 @@ services:
     ports:
       - 8081:8080
 
+  memcached:
+    image: memcached
+    command:
+      - --conn-limit=512
+      - --memory-limit=16
+      - --threads=1
+
 volumes:
   db_data:

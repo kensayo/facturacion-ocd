@@ -62,7 +62,7 @@
           <label for="type" class="block text-sm font-medium text-gray-600 mb-1">Tipo</label>
           <select id="type" name="type" required class="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white">
             <option value="income">Ingreso</option>
-            <option value="expense">Gasto</option>
+            <option value="transaction">Gasto</option>
           </select>
         </div>
         <div class="md:col-span-2 lg:col-span-1">
@@ -162,23 +162,23 @@
     // let transactions = [
     //     // Sample data (can be replaced by backend data)
     //     { id: 1, date: '2024-04-22', description: 'Venta inicial', observations: 'Primera venta del día', operator: 'Ana', type: 'income', currency: 'USD', rate: 1, amount: 150.00 },
-    //     { id: 2, date: '2024-04-22', description: 'Compra de café', observations: 'Para la oficina', operator: 'Luis', type: 'expense', currency: 'EUR', rate: 0.92, amount: 5.50 },
-    //     { id: 3, date: '2024-04-23', description: 'Pago proveedor X', observations: 'Factura #123', operator: 'Ana', type: 'expense', currency: 'USD', rate: 1, amount: 75.20 },
-    //     { id: 4, date: '2024-04-23', description: 'Servicio de limpieza', observations: '', operator: 'Carlos', type: 'expense', currency: 'COP', rate: 3900, amount: 50000.00 },
+    //     { id: 2, date: '2024-04-22', description: 'Compra de café', observations: 'Para la oficina', operator: 'Luis', type: 'transaction', currency: 'EUR', rate: 0.92, amount: 5.50 },
+    //     { id: 3, date: '2024-04-23', description: 'Pago proveedor X', observations: 'Factura #123', operator: 'Ana', type: 'transaction', currency: 'USD', rate: 1, amount: 75.20 },
+    //     { id: 4, date: '2024-04-23', description: 'Servicio de limpieza', observations: '', operator: 'Carlos', type: 'transaction', currency: 'COP', rate: 3900, amount: 50000.00 },
     //     { id: 5, date: '2024-04-24', description: 'Ingreso por servicio Y', observations: 'Cliente Z', operator: 'Luis', type: 'income', currency: 'VES', rate: 36.5, amount: 1800.00 },
     // ];
     let transactions = <%=
-        Expense.all.map do |expense|
+        Transaction.all.map do |transaction|
             {
-                id: expense.id,
-                date: expense.date,
-                description: expense.description,
-                observations: expense.details,
-                operator: expense.user_id,
-                type: 'expense',
-                currency: expense.coin_type,
-                rate: expense.exchange_rate,
-                amount: expense.amount
+                id: transaction.id,
+                date: transaction.date,
+                description: transaction.description,
+                observations: transaction.details,
+                operator: transaction.user_id,
+                type: 'transaction',
+                currency: transaction.coin_type,
+                rate: transaction.exchange_rate,
+                amount: transaction.amount
         }
         end.to_json.html_safe
      %>;
@@ -269,8 +269,8 @@
 
         // Sort data before rendering
         const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-            const valA = currentSort.column === 'amount' ? (a.type === 'expense' ? -a.amount : a.amount) : a[currentSort.column];
-            const valB = currentSort.column === 'amount' ? (b.type === 'expense' ? -b.amount : b.amount) : b[currentSort.column];
+            const valA = currentSort.column === 'amount' ? (a.type === 'transaction' ? -a.amount : a.amount) : a[currentSort.column];
+            const valB = currentSort.column === 'amount' ? (b.type === 'transaction' ? -b.amount : b.amount) : b[currentSort.column];
 
             if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
             if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
@@ -289,7 +289,7 @@
                     <td class="px-3 py-2 text-sm text-gray-700">${tx.description}</td>
                     <td class="px-3 py-2 text-center text-sm text-gray-500">${tx.currency}</td>
                     <td class="px-3 py-2 text-right text-sm ${amountCellClass}">
-                        ${tx.type === 'expense' ? '-' : ''}${formatCurrency(tx.amount, tx.currency)}
+                        ${tx.type === 'transaction' ? '-' : ''}${formatCurrency(tx.amount, tx.currency)}
                     </td>
                     <td class="px-3 py-2 text-center text-sm">
                         <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick="editTransaction(${tx.id})"><i class="fas fa-edit"></i></button>
