@@ -8,20 +8,14 @@ class Transaction < ApplicationRecord
   belongs_to :transaction_type
   validates :transaction_type, presence: true
 
-  scope :gastos, -> { where(transaction_type: 'gasto') }
-  scope :ingresos, -> { where(transaction_type: 'ingreso') }
-  scope :balance_by_currency, ->(currency_id) {
-    where(currency_id: currency_id)
-      .group(:transaction_type)
-      .sum(:amount)
-      .then { |result| (result['ingreso'] || 0) - (result['gasto'] || 0) }.round(2)
-  }
+  has_one :currency, through: :account
 
+  delegate :name, to: :transaction_type, prefix: true
+
+  scope :gastos, -> { where(is_income: false) }
+  scope :ingresos, -> { where(is_income: true) }
 
   def formatted_amount
-    "#{amount} #{currency.symbol} "
-  end
-
-  def self.total_coin_value(currency = 'USD')
+    "#{amount} #{currency.symbol}"
   end
 end

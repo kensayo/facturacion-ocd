@@ -1,7 +1,7 @@
 class TransactionsController < ApplicationController
   before_action :set_transaction, only: %i[ show edit update destroy ]
 
-  s def index
+  def index
     @transaction = Transaction.all
   end
 

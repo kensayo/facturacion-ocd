@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registro de Caja</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <%= stylesheet_link_tag 'application' %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
+  <link rel="preconnect" href="https://rsms.me/">
+  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+</head>
+<body class="text-gray-800">
+
+<div class="container mx-auto p-4 md:p-8">
+
+  <header class="mb-6 flex flex-col sm:flex-row justify-between items-center p-4 bg-white rounded-lg shadow">
+    <h1 class="text-2xl font-semibold text-gray-700 mb-2 sm:mb-0">
+      <i class="fas fa-cash-register mr-2 text-blue-500"></i>
+      <span id="cash-box-name"><%= @user.house.name %></span>
+    </h1>
+    <div class="text-sm text-gray-500">
+      <i class="fas fa-user mr-1"></i>Registrado por: <span id="user-name" class="font-medium"><%= current_user.full_name %></span>
+      <%= button_to 'Cerrar Sesion', logout_path, method: :delete %>
+    </div>
+  </header>
+
+  <section class="mb-6 grid grid-cols-2 md:grid-cols-4 gap-4 balance-section">
+    <% @accounts.each_with_index do |account, i| %>
+      <div class="p-4 <%= Account::COLORS[i] %> rounded-lg shadow text-center">
+        <h3 class="text-sm font-medium text-blue-800"><%= account.name %></h3>
+        <p id="balance-usd" class="text-xl font-semibold text-blue-900"><%= account.pretty_balance %></p>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="mb-6 p-6 bg-white rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-4 text-gray-700">Registrar Movimiento</h2>
+    <%= form_with(model: @transaction, class: "space-y-4") do |f| %>
+      <%= f.hidden_field :user_id, value: @transaction.user_id %>
+      <%= f.hidden_field :account_id, value: @transaction.account_id %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div>
+          <%= f.label :date, "Fecha", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.date_field :date, value: Date.today, required: true, class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :is_income, "Tipo", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.select :is_income,
+                       [true, false],
+                       { required: true },
+                       { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
+        </div>
+
+        <div class="md:col-span-2 lg:col-span-1">
+          <%= f.label :description, "Descripción", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.text_field :description, required: true, placeholder: "Ej: Venta del día, Compra de papelería",
+                           class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :account_id, "Cuenta", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.collection_select :account_id, @accounts, :id, :name,
+                                  { required: true },
+                                  { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
+        </div>
+
+        <div>
+          <%= f.label :transaction_type_id, "Rubro", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.collection_select :transaction_type_id, TransactionType.all, :id, :name,
+                                  { required: true },
+                                  { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
+        </div>
+
+        <div>
+          <%= f.label :exchange_rate, "Tasa (Opcional)", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.number_field :exchange_rate, step: "any", placeholder: "Ej: Tasa de cambio",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+
+        <div>
+          <%= f.label :amount, "Monto", class: "block text-sm font-medium text-gray-600 mb-1" %>
+          <%= f.number_field :amount, required: true, step: "0.01", min: 0, placeholder: "0.00",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+        </div>
+      </div>
+
+      <div class="md:col-span-3">
+        <%= f.label :details, "Observaciones", class: "block text-sm font-medium text-gray-600 mb-1" %>
+        <%= f.text_area :details, rows: 2, placeholder: "Detalles adicionales (opcional)",
+                        class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+      <div class="flex justify-end pt-4">
+        <%= f.submit "Guardar Registro",
+                     class: "bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out" do %>
+          <i class="fas fa-save mr-2"></i>
+        <% end %>
+      </div>
+    <% end %>
+  </section>
+
+  <section class="mb-4 flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="relative w-full md:w-auto search-container">
+      <input type="search" id="search-input" placeholder="Buscar por descripción, moneda..." class="w-full md:w-64 lg:w-80 p-2 pl-10 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+      <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+    </div>
+    <div class="flex gap-2 flex-wrap justify-end action-buttons-container">
+      <button id="export-csv" title="Exportar CSV" class="action-button bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg shadow text-sm transition duration-200 ease-in-out flex items-center">
+        <i class="fas fa-upload mr-1"></i><span class="hidden sm:inline">CSV</span>
+      </button>
+      <button id="import-csv" title="Importar CSV" class="action-button bg-yellow-500 hover:bg-yellow-600 text-white font-medium py-2 px-4 rounded-lg shadow text-sm transition duration-200 ease-in-out flex items-center">
+        <i class="fas fa-download mr-1"></i><span class="hidden sm:inline">CSV</span>
+      </button>
+      <button id="print-pdf" title="Imprimir PDF" class="action-button bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg shadow text-sm transition duration-200 ease-in-out">
+        <i class="fas fa-print"></i>
+      </button>
+    </div>
+  </section>
+
+  <section class="bg-white rounded-lg shadow overflow-hidden">
+    <div class="block w-full overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50 hidden md:table-header-group">
+        <tr>
+          <th scope="col" data-sort="date" class="w-2/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider table-header-sortable">
+            Fecha <i class="fas fa-sort sort-icon"></i>
+          </th>
+          <th scope="col" class="w-4/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Descripción
+          </th>
+          <th scope="col" class="w-4/12 px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Rubro
+          </th>
+          <th scope="col" class="w-2/12 px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Moneda
+          </th>
+          <th scope="col" data-sort="amount" class="w-2/12 px-3 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider table-header-sortable">
+            Monto <i class="fas fa-sort sort-icon"></i>
+          </th>
+          <th scope="col" class="w-2/12 px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+            Acciones
+          </th>
+        </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 block md:table-row-group">
+            <% if @transactions.nil? %>
+            <tr class="no-data-row">
+              <td colspan="5" class="text-center py-10 text-gray-500">No hay registros todavía.</td>
+            </tr>
+            <% else
+                @transactions.each do |transaction| %>
+                <tr class="block md:table-row px-4 py-3 md:p-0 mb-4 md:mb-0 border rounded-lg md:rounded-none border-gray-200 md:m-0 m-4 md:border-0 <%= transaction.is_income ? 'bg-blue-50' : 'bg-red-50' %>">
+                    <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Fecha:'] before:font-medium before:mr-2 md:before:content-none">
+                      <%= transaction.date.strftime("%d/%m/%y") %>
+                    </td>
+                    <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Descripción:'] before:font-medium before:mr-2 md:before:content-none">
+                      <%= transaction.description %>
+                    </td>
+                  <td class="block md:table-cell px-3 py-2 text-left md:text-center text-sm text-gray-500 before:content-['Moneda:'] before:font-medium before:mr-2 md:before:content-none">
+                    <%= transaction.transaction_type_name %>
+                  </td>
+                    <td class="block md:table-cell px-3 py-2 text-left md:text-center text-sm text-gray-500 before:content-['Moneda:'] before:font-medium before:mr-2 md:before:content-none">
+                      <%= transaction.currency.code %>
+                    </td>
+                    <td class="block md:table-cell px-3 py-2 text-left md:text-right text-sm <%= transaction.transaction_type == 'ingreso' ? 'text-blue-600 font-medium' : 'text-red-600 font-medium' %> before:content-['Monto:'] before:font-medium before:mr-2 md:before:content-none">
+                      <%= transaction.formatted_amount %>
+                    </td>
+                    <td class="block md:table-cell px-3 py-2 text-left md:text-center text-sm before:content-['Acciones:'] before:font-medium before:mr-2 md:before:content-none">
+                      <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick="editTransaction()">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <%= button_to transaction_path(transaction),
+                                    method: :delete,
+                                    class: "text-red-500 hover:text-red-700",
+                                    title: "Eliminar",
+                                    data: { confirm: "¿Estás seguro de que quieres eliminar este registro?" } do %>
+                        <i class="fas fa-trash"></i>
+                      <% end %>
+
+                    </td>
+                </tr>
+              <% end %>
+            <% end %>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <div id="message-box" class="fixed bottom-4 right-4 p-4 rounded-lg shadow-lg text-white max-w-sm hidden animate-pulse">
+    <span id="message-text"></span>
+    <button class="ml-4 font-bold" onclick="hideMessage()">X</button>
+  </div>
+
+</div>
+
+<script>
+    // --- Mock Data ---
+    // let transactions = [
+    //     // Sample data (can be replaced by backend data)
+    //     { id: 1, date: '2024-04-22', description: 'Venta inicial', observations: 'Primera venta del día', operator: 'Ana', type: 'income', currency: 'USD', rate: 1, amount: 150.00 },
+    //     { id: 2, date: '2024-04-22', description: 'Compra de café', observations: 'Para la oficina', operator: 'Luis', type: 'transaction', currency: 'EUR', rate: 0.92, amount: 5.50 },
+    //     { id: 3, date: '2024-04-23', description: 'Pago proveedor X', observations: 'Factura #123', operator: 'Ana', type: 'transaction', currency: 'USD', rate: 1, amount: 75.20 },
+    //     { id: 4, date: '2024-04-23', description: 'Servicio de limpieza', observations: '', operator: 'Carlos', type: 'transaction', currency: 'COP', rate: 3900, amount: 50000.00 },
+    //     { id: 5, date: '2024-04-24', description: 'Ingreso por servicio Y', observations: 'Cliente Z', operator: 'Luis', type: 'income', currency: 'VES', rate: 36.5, amount: 1800.00 },
+    // ];
+    let transactions = <%=
+        @transactions.map do |transaction|
+            {
+                id: transaction.id,
+                date: transaction.date,
+                description: transaction.description,
+                observations: transaction.details,
+                operator: transaction.user_id,
+                type: transaction.transaction_type,
+                currency: transaction.currency.code,
+                rate: transaction.exchange_rate,
+                amount: transaction.amount
+        }
+        end.to_json.html_safe
+     %>;
+
+    console.log(transactions);
+    //let operators = ['Ana', 'Luis', 'Carlos', 'Maria', 'Pedro']; // Editable list (editing not implemented in v1)
+    let nextId = 6; // Simple ID generation for mock data
+    let currentSort = { column: 'date', direction: 'desc' }; // Default sort
+
+    // --- DOM Elements ---
+    const form = document.getElementById('transaction-form');
+    const dateInput = document.getElementById('date');
+    const operatorSelect = document.getElementById('operator');
+    const transactionList = document.getElementById('transaction-list');
+    const searchInput = document.getElementById('search-input');
+    const balanceUsd = document.getElementById('balance-usd');
+    const balanceEur = document.getElementById('balance-eur');
+    const balanceVes = document.getElementById('balance-ves');
+    const balanceCop = document.getElementById('balance-cop');
+    const messageBox = document.getElementById('message-box');
+    const messageText = document.getElementById('message-text');
+
+    // --- Utility Functions ---
+    function formatCurrency(amount, currency) {
+        const options = { style: 'currency', currency: currency, minimumFractionDigits: 2 };
+        // Handle specific currency symbols/formats if needed
+        switch (currency) {
+            case 'USD': return amount.toLocaleString('en-US', options);
+            case 'EUR': return amount.toLocaleString('de-DE', options); // Use a locale that commonly uses EUR
+            case 'VES': return `Bs. ${amount.toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`; // Custom format for VES
+            case 'COP': return amount.toLocaleString('es-CO', options); // Use Colombian locale
+            default: return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+    }
+
+    function showMessage(text, type = 'success') {
+        messageText.textContent = text;
+        messageBox.classList.remove('hidden', 'bg-green-500', 'bg-red-500', 'bg-yellow-500', 'animate-pulse');
+        messageBox.classList.add('animate-pulse'); // Re-add for animation effect
+
+        if (type === 'success') {
+            messageBox.classList.add('bg-green-500');
+        } else if (type === 'error') {
+            messageBox.classList.add('bg-red-500');
+        } else { // warning or info
+            messageBox.classList.add('bg-yellow-500');
+            messageBox.classList.remove('text-white'); // Yellow might need dark text
+            messageBox.classList.add('text-yellow-800');
+        }
+
+        messageBox.classList.remove('hidden');
+
+        // Auto-hide after 5 seconds
+        setTimeout(hideMessage, 5000);
+    }
+
+    function hideMessage() {
+        messageBox.classList.add('hidden');
+        messageBox.classList.remove('text-yellow-800'); // Reset text color if changed
+        messageBox.classList.add('text-white');
+    }
+
+
+    // --- Core Functions ---
+
+    // function populateOperators() {
+    //     operatorSelect.innerHTML = ''; // Clear existing options
+    //     operators.forEach(op => {
+    //         const option = document.createElement('option');
+    //         option.value = op;
+    //         option.textContent = op;
+    //         operatorSelect.appendChild(option);
+    //     });
+    //     // Set default selected operator (e.g., the first one or based on logged-in user)
+    //     if (operators.length > 0) {
+    //         operatorSelect.value = operators[0];
+    //     }
+    // }
+
+    function renderTransactions(filteredTransactions = transactions) {
+        transactionList.innerHTML = ''; // Clear existing rows
+
+        if (filteredTransactions.length === 0) {
+            // Updated colspan
+            transactionList.innerHTML = '<tr class="no-data-row"><td colspan="5" class="text-center py-10 text-gray-500">No se encontraron registros.</td></tr>';
+            return;
+        }
+
+        // Sort data before rendering
+        const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+            const valA = currentSort.column === 'amount' ? (a.type === 'transaction' ? -a.amount : a.amount) : a[currentSort.column];
+            const valB = currentSort.column === 'amount' ? (b.type === 'transaction' ? -b.amount : b.amount) : b[currentSort.column];
+
+            if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+            if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+
+        sortedTransactions.forEach(tx => {
+            const row = document.createElement('tr');
+            row.classList.add(tx.type === 'income' ? 'bg-blue-50' : 'bg-red-50'); // Subtle row background
+
+            const amountCellClass = tx.type === 'income' ? 'text-blue-600 font-medium' : 'text-red-600 font-medium';
+
+            // Removed the erroneous comments from the template literal
+            row.innerHTML = `
+                    <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">${tx.date}</td>
+                    <td class="px-3 py-2 text-sm text-gray-700">${tx.description}</td>
+                    <td class="px-3 py-2 text-center text-sm text-gray-500">${tx.currency}</td>
+                    <td class="px-3 py-2 text-right text-sm ${amountCellClass}">
+                        ${tx.type === 'transaction' ? '-' : ''}${formatCurrency(tx.amount, tx.currency)}
+                    </td>
+                    <td class="px-3 py-2 text-center text-sm">
+                        <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick="editTransaction(${tx.id})"><i class="fas fa-edit"></i></button>
+                        <button class="text-red-500 hover:text-red-700" title="Eliminar" onclick="deleteTransaction(${tx.id})"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+            transactionList.appendChild(row);
+        });
+    }
+
+    function calculateBalances() {
+        const balances = { USD: 0, EUR: 0, VES: 0, COP: 0 };
+        transactions.forEach(tx => {
+            if (balances.hasOwnProperty(tx.currency)) {
+                if (tx.type === 'income') {
+                    balances[tx.currency] += tx.amount;
+                } else {
+                    balances[tx.currency] -= tx.amount;
+                }
+            }
+        });
+
+        balanceUsd.textContent = formatCurrency(balances.USD, 'USD');
+        balanceEur.textContent = formatCurrency(balances.EUR, 'EUR');
+        balanceVes.textContent = formatCurrency(balances.VES, 'VES');
+        balanceCop.textContent = formatCurrency(balances.COP, 'COP');
+    }
+
+    function handleFormSubmit(event) {
+        event.preventDefault(); // Prevent actual form submission
+
+        const formData = new FormData(form);
+        const newTransaction = {
+            id: nextId++,
+            date: formData.get('date'),
+            description: formData.get('description'),
+            observations: formData.get('observations'), // Data still captured
+            operator: formData.get('operator'),         // Data still captured
+            type: formData.get('type'),
+            currency: formData.get('currency'),
+            rate: formData.get('rate') ? parseFloat(formData.get('rate')) : null, // Data still captured
+            amount: parseFloat(formData.get('amount'))
+        };
+
+        // Basic validation (more robust validation needed in production)
+        if (!newTransaction.date || !newTransaction.description || !newTransaction.operator || !newTransaction.currency || isNaN(newTransaction.amount) || newTransaction.amount <= 0) {
+            showMessage('Por favor, complete todos los campos requeridos correctamente.', 'error');
+            return;
+        }
+
+        // Add to mock data (replace with API call)
+        transactions.push(newTransaction);
+
+        // Update UI
+        renderTransactions(); // Renders the updated list (without the removed columns)
+        calculateBalances();
+        showMessage('Registro guardado exitosamente.', 'success');
+
+        // Reset form
+        form.reset();
+        dateInput.valueAsDate = new Date(); // Reset date to today
+        #operatorSelect.value = operators[0]; // Reset operator to default
+    }
+
+    function filterAndRender() {
+        const searchTerm = searchInput.value.toLowerCase();
+        if (!searchTerm) {
+            renderTransactions(transactions); // Show all if search is empty
+            return;
+        }
+
+        // Updated filter: removed operator and observations from search fields displayed
+        // Note: They *could* still be searched if desired, as the data exists
+        const filtered = transactions.filter(tx =>
+            tx.description.toLowerCase().includes(searchTerm) ||
+            // tx.operator.toLowerCase().includes(searchTerm) || // Removed from filter
+            // tx.observations.toLowerCase().includes(searchTerm) || // Removed from filter
+            tx.currency.toLowerCase().includes(searchTerm) ||
+            tx.date.includes(searchTerm) // Simple date search
+        );
+        renderTransactions(filtered);
+    }
+
+    function handleSort(event) {
+        const header = event.target.closest('th[data-sort]');
+        if (!header) return;
+
+        const sortColumn = header.dataset.sort;
+
+        // Prevent sorting if clicking on a non-sortable column (though only date/amount are marked)
+        if (!['date', 'amount'].includes(sortColumn)) return;
+
+
+        if (currentSort.column === sortColumn) {
+            // Toggle direction
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            // Change column, default to ascending for date, descending for amount initially? Or always asc? Let's stick to asc.
+            currentSort.column = sortColumn;
+            currentSort.direction = 'asc';
+        }
+
+        // Update sort icons (visual feedback)
+        document.querySelectorAll('.sort-icon').forEach(icon => icon.className = 'fas fa-sort sort-icon'); // Reset icons
+        const currentIcon = header.querySelector('.sort-icon');
+        currentIcon.className = `fas fa-sort-${currentSort.direction === 'asc' ? 'up' : 'down'} sort-icon`;
+
+
+        filterAndRender(); // Re-render with new sort order (and existing filter)
+    }
+
+    // --- Placeholder Functions for Actions ---
+    function editTransaction(id) {
+        // In a real app: Fetch transaction details, populate form/modal, handle update via API
+        const tx = transactions.find(t => t.id === id);
+        // IMPORTANT: When implementing edit, ensure the form/modal shows ALL fields
+        // (including observations, operator, rate) even if they are not in the table.
+        showMessage(`Funcionalidad Editar (ID: ${id}): "${tx.description}" (No implementado en v1).`, 'warning');
+    }
+
+    // --- Event Listeners ---
+    form.addEventListener('submit', handleFormSubmit);
+    searchInput.addEventListener('input', filterAndRender); // Use 'input' for real-time filtering
+    document.querySelector('thead').addEventListener('click', handleSort);
+    document.getElementById('export-csv').addEventListener('click', exportCSV);
+    document.getElementById('import-csv').addEventListener('click', importCSV);
+    document.getElementById('print-pdf').addEventListener('click', printPDF);
+
+
+    // --- Initial Setup ---
+    // document.addEventListener('DOMContentLoaded', () => {
+    //     dateInput.valueAsDate = new Date(); // Set default date to today
+    //     populateOperators();
+    //     renderTransactions();
+    //     calculateBalances();
+    //     // Set initial sort icon
+    //     document.querySelector('th[data-sort="date"] .sort-icon').className = `fas fa-sort-${currentSort.direction === 'asc' ? 'up' : 'down'} sort-icon`;
+    // });
+
+</script>
+
+</body>
+</html>

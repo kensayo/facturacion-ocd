@@ -5,6 +5,7 @@ class User < ApplicationRecord
   validates :house, presence: true
 
   has_many :transactions, dependent: :nullify
+  has_many :accounts, through: :house
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   attr_accessor :remember_token
