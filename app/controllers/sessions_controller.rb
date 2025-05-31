@@ -35,7 +35,11 @@ class SessionsController < ApplicationController
       # flash[:success] = "¡Bienvenido de nuevo, #{user.name}!"
 
       # 3. Redirige a alguna página (ej: página principal, perfil del usuario)
-      redirect_to root_path # Cambia root_url por la ruta que desees
+      if user.user_role == 'admin'
+        redirect_to administracion_path
+      elsif
+        redirect_to root_path # Cambia root_url por la ruta que desees
+      end
     else
       # Fallo en el login:
       # 1. Muestra un mensaje de error que solo dure en esta petición (flash.now)
