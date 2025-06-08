@@ -1,0 +1,86 @@
+/* Custom Styles (Optional) */
+body {
+    font-family: 'Inter', sans-serif; /* Using Inter font from Tailwind defaults */
+    background-color: #E6E6DC; /* Light pastel background */
+}
+.pastel-blue { background-color: #e0f2fe; }
+.pastel-green { background-color: #dcfce7; }
+.pastel-yellow { background-color: #fef9c3; }
+.pastel-purple { background-color: #f3e8ff; }
+.pastel-pink { background-color: #fee2e2; }
+.pastel-orange { background-color: #fff7ed; }
+.pastel-teal { background-color: #ccfbf1; }
+.pastel-lavender { background-color: #ede9fe; }
+.pastel-peach { background-color: #ffead0; }
+.pastel-mint { background-color: #e0faec; }
+
+.table-header-sortable {
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+.table-header-sortable:hover {
+    color: #3b82f6; /* Blue-500 */
+}
+.table-header-sortable .sort-icon {
+    opacity: 0.5;
+    margin-left: 4px;
+    transition: opacity 0.2s ease-in-out;
+}
+.table-header-sortable:hover .sort-icon {
+    opacity: 1;
+}
+/* Ensure table layout is consistent */
+table {
+    table-layout: fixed; /* Helps with consistent column widths */
+    width: 100%;
+}
+th, td {
+    word-wrap: break-word; /* Prevent long text from breaking layout */
+    padding: 12px 8px; /* Consistent padding */
+}
+
+.btn-default-black {
+    background-color: #121212;
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    /* Stack form elements */
+    #transaction-form > div {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    #transaction-form label {
+        margin-bottom: 4px;
+    }
+    #transaction-form input,
+    #transaction-form select,
+    #transaction-form textarea {
+        width: 100%;
+    }
+    /* Make table scrollable horizontally on small screens */
+    .table-container {
+        overflow-x: auto;
+    }
+    table {
+        min-width: 500px; /* Adjust min-width after removing columns */
+    }
+    /* Adjust padding/margins for smaller screens */
+    .container {
+        padding: 1rem;
+    }
+    .balance-section div {
+        margin-bottom: 0.5rem;
+    }
+    /* Adjust button text visibility on smaller screens if needed */
+    .action-button span {
+        /* display: none; */ /* Uncomment to hide text on very small screens */
+    }
+    /* Ensure buttons align right on small screens too */
+    .action-buttons-container {
+        width: 100%; /* Make button container full width on small screens */
+        justify-content: flex-end; /* Keep buttons aligned right */
+    }
+    .search-container {
+        width: 100%; /* Make search container full width on small screens */
+    }
+}

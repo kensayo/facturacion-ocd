@@ -1,0 +1,20 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @transaction %>
+
+<div>
+  <td class="px-3 py-2 whitespace-nowrap text-sm text-gray-700">${@transaction.date}</td>
+  <td class="px-3 py-2 text-sm text-gray-700">${@transaction.description}</td>
+  <td class="px-3 py-2 text-center text-sm text-gray-500">${@transaction.currency}</td>
+  <td class="px-3 py-2 text-right text-sm ${amountCellClass}">
+    ${@transaction.type === 'transaction' ? '-' : ''}${formatCurrency(@transaction.amount, @transaction.currency)}
+  </td>
+  <td class="px-3 py-2 text-center text-sm">
+    <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick=""><i class="fas fa-edit"></i></button>
+    <button class="text-red-500 hover:text-red-700" title="Eliminar" onclick=""><i class="fas fa-trash"></i></button>
+  </td>
+  <%= link_to "Edit this transaction", edit_transaction_path(@transaction) %> |
+  <%= link_to "Back to transactions", transactions_path %>
+
+  <%= button_to "Destroy this transaction", @transaction, method: :delete %>
+</div>

@@ -8,30 +8,29 @@
 # For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.3.8
-FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+FROM docker.io/library/ruby:3.3.8 AS base
 
 # Rails app lives here
-WORKDIR /rails
+WORKDIR /facturacion-ocd
 
 # Install base packages
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client nano && \
     rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-RUN mkdir -p /rails/tmp/sockets /rails/tmp/pids /rails/log && \
-    chmod -R 775 /rails/tmp /rails/log && \
-    touch /rails/log/development.log && \
-    chmod 664 /rails/log/development.log
+#RUN mkdir -p /rails/tmp/sockets /rails/tmp/pids /rails/log && \
+#    chmod -R 775 /rails/tmp /rails/log && \
+#    touch /rails/log/development.log && \
+#    chmod 664 /rails/log/development.log
 
 # Set production environment
-ENV RAILS_ENV="development" \
-    BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+ENV RAILS_ENV="development"
+    #BUNDLE_PATH="/usr/local/bundle" \
+
+RUN gem install bundler
 
 # Throw-away build stage to reduce size of final image
-FROM base AS build
+# FROM base AS build
 
 # Install packages needed to build gems
 RUN apt-get update -qq && \
@@ -40,8 +39,12 @@ RUN apt-get update -qq && \
 
 # Install application gems
 COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+
+#RUN mkdir -p "${BUNDLE_PATH}" && \
+#    chmod -R 777 "${BUNDLE_PATH}"
+
+RUN bundle config set frozen false && \
+    bundle install && \
     bundle exec bootsnap precompile --gemfile
 
 # Copy application code
@@ -54,20 +57,20 @@ COPY . .
 
 
 # Final stage for app image
-FROM base
+# FROM base
 
 # Copy built artifacts: gems, application
-COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
-COPY --from=build /rails /rails
+#COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+#COPY --from=build /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN groupadd --system --gid 1000 rails && \
-    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
-    chown -R rails:rails db log storage tmp
-USER 1000:1000
+#RUN groupadd --system --gid 1000 rails && \
+#    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+#    chown -R rails:rails db log storage tmp
+#USER 1000:1000
 
 # Entrypoint prepares the database.
-ENTRYPOINT ["/rails/docker-entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
 # EXPOSE 80

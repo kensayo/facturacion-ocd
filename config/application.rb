@@ -14,6 +14,10 @@ module App
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
+       config.middleware.use Rack::MethodOverride
+        config.middleware.use ActionDispatch::Flash
+        config.middleware.use ActionDispatch::Cookies
+        config.middleware.use ActionDispatch::Session::CookieStore, key: 'facturacion-ocd' # Usa un nombre de clave único
     config.autoload_lib(ignore: %w[assets tasks])
 
     # Configuration for the application, engines, and railties goes here.
@@ -27,6 +31,8 @@ module App
     # Only loads a smaller set of middleware suitable for API only apps.
     # Middleware like session, flash, cookies can be added back manually.
     # Skip views, helpers and assets when generating a new resource.
-    config.api_only = true
+    config.middleware.use ActionDispatch::Cookies
+    config.action_controller.default_url_options = { host: ENV['DEFAULT_URL_HOST'] || 'localhost', port: ENV['DEFAULT_URL_PORT'] || 3000 }
+
   end
 end
