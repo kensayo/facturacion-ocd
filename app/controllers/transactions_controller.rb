@@ -20,7 +20,8 @@ class TransactionsController < ApplicationController
 
   # POST /transactions
   def create
-    @transaction = Transaction.new(transaction_params['transaction'])
+    @transaction = Transaction.new(transaction_params)
+    @transaction.user = current_user
 
     if @transaction.save
       redirect_to root_path, notice: 'Transaction was successfully created.'
@@ -52,6 +53,7 @@ class TransactionsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def transaction_params
-      params.permit!
+      params.require(:transaction).permit(:amount, :date, :description, :details, :exchange_rate, :invoice_number,
+                                          :account_id, :in_income,:transaction_type_id)
     end
 end

@@ -1,18 +1,4 @@
-<!DOCTYPE html>
-<html lang="es" class="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Caja</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <%= stylesheet_link_tag 'application' %>
-  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
-  <link rel="preconnect" href="https://rsms.me/">
-  <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
-</head>
-<body class="text-gray-800">
-
+<% content_for(:title) { "Facturación - OCD" } %>
     <div class="container mx-auto p-4 md:p-8">
 
       <header class="mb-6 flex flex-col sm:flex-row justify-between items-center p-4 bg-white rounded-lg shadow">
@@ -49,7 +35,7 @@
             <div>
               <%= f.label :is_income, "Tipo", class: "block text-sm font-medium text-gray-600 mb-1" %>
               <%= f.select :is_income,
-                           [true, false],
+                           ['Ingreso', 'Egreso'],
                            { required: true },
                            { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
             </div>
@@ -92,7 +78,7 @@
             <%= f.text_area :details, rows: 2, placeholder: "Detalles adicionales (opcional)",
                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
           </div>
-          <div class="flex justify-end pt-4">
+          <div class="flex justify-center pt-4">
             <%= f.submit "Guardar Registro",
                          class: "bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out" do %>
               <i class="fas fa-save mr-2"></i>
@@ -130,6 +116,9 @@
               <th scope="col" class="w-4/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Descripción
               </th>
+              <th scope="col" class="w-4/12 px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                USuario
+              </th>
               <th scope="col" class="w-4/12 px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Rubro
               </th>
@@ -152,12 +141,15 @@
                 <% else
                     @transactions.each do |transaction| %>
                     <tr class="block md:table-row px-4 py-3 md:p-0 mb-4 md:mb-0 border rounded-lg md:rounded-none border-gray-200 md:m-0 m-4 md:border-0 <%= transaction.is_income ? 'bg-blue-50' : 'bg-red-50' %>">
-                        <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Fecha:'] before:font-medium before:mr-2 md:before:content-none">
-                          <%= transaction.date.strftime("%d/%m/%y") %>
-                        </td>
-                        <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Descripción:'] before:font-medium before:mr-2 md:before:content-none">
-                          <%= transaction.description %>
-                        </td>
+                      <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Fecha:'] before:font-medium before:mr-2 md:before:content-none">
+                        <%= transaction.date.strftime("%d/%m/%y") %>
+                      </td>
+                      <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Descripción:'] before:font-medium before:mr-2 md:before:content-none">
+                        <%= transaction.description %>
+                      </td>
+                      <td class="block md:table-cell px-3 py-2 text-sm text-gray-700 before:content-['Descripción:'] before:font-medium before:mr-2 md:before:content-none">
+                        <%= transaction.username.capitalize %>
+                      </td>
                       <td class="block md:table-cell px-3 py-2 text-left md:text-center text-sm text-gray-500 before:content-['Moneda:'] before:font-medium before:mr-2 md:before:content-none">
                         <%= transaction.transaction_type_name %>
                       </td>
@@ -194,5 +186,3 @@
       </div>
 
     </div>
-</body>
-</html>

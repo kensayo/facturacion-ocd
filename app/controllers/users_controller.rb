@@ -1,59 +1,113 @@
 class UsersController < ApplicationController
   before_action :set_user, only: %i[ show edit update destroy ]
+  before_action :set_houses, only: [ :new, :create, :edit, :update ]
+  before_action :load_users, only: [ :edit, :new, :index ]
 
-  belongs_to :account, optional: true
   # GET /users
   def index
-    @users = User.all
   end
-
-  # GET /users/1
-  def show
-  end
-
-  # GET /users/new
   def new
     @user = User.new
-  end
-
-  # GET /users/1/edit
-  def edit
+    # Responde con un Turbo Stream para reemplazar el contenedor del formulario
+    respond_to do |format|
+      format.html { render 'administration/index' } # Fallback for non-JS requests
+      format.turbo_stream do
+          render(partial: 'users/form', locals: { user: User.new })
+      end
+    end
   end
 
   # POST /users
   def create
     @user = User.new(user_params)
-
-    if @user.save
-      redirect_to @user, notice: 'User was successfully created.'
-    else
-      render :new, status: :unprocessable_entity
+    respond_to do |format|
+      if @user.save
+        new_user = @user
+        @user = User.new
+        format.html { redirect_to administracion_path, notice: 'Usuario creado exitosamente.' }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.append('operators-list', partial: 'user_row', locals: { user: new_user }), # Asegúrate de tener _user_row.html.erb
+            turbo_stream.replace('user_form_container', partial: 'users/form', locals: { user: @user }) # Resetear el formulario
+          ]
+        end
+      else
+        format.html { render 'administration/index', status: :unprocessable_entity }
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace(
+            'user_form_container',
+            partial: 'users/form', #
+            locals: { user: @user, houses: @houses }
+          ), status: :unprocessable_entity
+        end
+      end
     end
   end
 
-  # PATCH/PUT /users/1
+  # GET /users/:id/edit (Esta acción ahora responderá con el formulario de edición via Turbo Stream)
+  def edit
+    # @user está establecido por before_action
+    # @houses está establecido por before_action
+    respond_to do |format|
+      format.html { render 'administration/index' } # Fallback for non-JS requests
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace( # No necesitas el array si es solo un replace
+          'user_form_container',
+          partial: 'users/form', # <-- Solo partial: 'users/form'
+          locals: { user: @user, houses: @houses }
+        )
+      end
+    end
+  end
+
+  # PATCH/PUT /users/:id
   def update
-    if @user.update(user_params)
-      redirect_to @user, notice: 'User was successfully updated.', status: :see_other
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @user.update(user_params)
+        format.html { redirect_to administration_path, notice: 'Usuario actualizado exitosamente.' }
+        format.turbo_stream do
+          render turbo_stream: [
+            turbo_stream.replace(@user, partial: 'user_row', locals: { user: @user }),
+            turbo_stream.replace('user_form_container', partial: 'users/form', locals: { user: User.new })
+          ]
+        end
+      else
+        format.html { render 'administration/index', status: :unprocessable_entity }
+        format.turbo_stream do
+          # Si falla, reemplazar el formulario con los errores
+          render turbo_stream: turbo_stream.replace(
+            'user_form_container',
+            render(partial: 'users/form', locals: { user: @user })
+          ), status: :unprocessable_entity
+        end
+      end
     end
   end
 
-  # DELETE /users/1
+  # DELETE /users/:id
   def destroy
-    @user.destroy!
-    redirect_to users_path, notice: 'User was successfully destroyed.', status: :see_other
+    @user.destroy
+    respond_to do |format|
+      format.html { redirect_to administration_path, notice: 'Usuario eliminado exitosamente.' }
+      format.turbo_stream { render turbo_stream: turbo_stream.remove(@user) } # Elimina la fila del usuario de la tabla
+    end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_user
-      @user = User.find(params.expect(:id))
-    end
 
-    # Only allow a list of trusted parameters through.
-    def user_params
-      params.fetch(:user, {})
-    end
+  def set_user
+    @user = User.find(params[:id])
+  end
+
+  def set_houses
+    @houses = House.all
+  end
+
+  def load_users
+    @users = User.all
+  end
+
+  def user_params
+    params.require(:user).permit(:name, :lastname, :username, :password, :password_confirmation, :birthdate, :house_id)
+  end
 end
