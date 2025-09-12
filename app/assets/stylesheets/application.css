@@ -84,3 +84,9 @@ th, td {
         width: 100%; /* Make search container full width on small screens */
     }
 }
+
+td {
+    word-wrap: break-word; /* Para compatibilidad */
+    overflow-wrap: break-word; /* Mejor opción */
+    white-space: normal;
+}
