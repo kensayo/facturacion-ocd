@@ -1,8 +1,9 @@
 class DashboardController < ApplicationController
   before_action :validate_user
   def index
+    redirect_to administracion_path if current_user.user_role == 'admin'
     @user = current_user
-    @transactions = @user.transactions
+    @transactions = Transaction.transactions_by_house(@user.house.users)
     @accounts = @user.accounts
     @transaction = Transaction.new(user: current_user)
   end

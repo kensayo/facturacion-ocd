@@ -8,6 +8,13 @@ class User < ApplicationRecord
   has_many :accounts, through: :house
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
+  # validates :password,
+  #           length: { minimum: 8, message: "debe tener al menos 8 caracteres." },
+  #           format: {
+  #             with: /\A(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[[:^alnum:]])/,
+  #             message: "debe incluir al menos una mayúscula, una minúscula, un número y un carácter especial."
+  #           },
+  #           if: -> { new_record? || password.present? }
   attr_accessor :remember_token
 
   def self.digest(string)

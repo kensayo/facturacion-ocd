@@ -67,9 +67,21 @@ user = User.create!(
   name: "Kenny",
   lastname: "Ortega",
   birthdate: Date.new(1990, 10, 8),
-  password: "19501388",
-  password_confirmation: "19501388",
+  password: "KAoc100890**",
+  password_confirmation: "KAoc100890**",
   house: house
+)
+
+# Crear Admin
+user = User.create!(
+  username: "admin",
+  name: "Admin",
+  lastname: "Istrador",
+  birthdate: Date.new(1990, 10, 8),
+  password: "KAoc100890**",
+  password_confirmation: "KAoc100890**",
+  house: house,
+  user_role: 'admin'
 )
 
 transaction_types_data = [

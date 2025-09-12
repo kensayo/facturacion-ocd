@@ -1,0 +1,36 @@
+<!--<form id="currency-form" class="mb-6 space-y-4">-->
+<%= form_with(model: @currency, class: "mb-6 space-y-4",
+              id: "new_currency_form",
+              data: { turbo_frame: 'currency_form_container' }) do |f| %>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div>
+      <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :name, required: true, placeholder: "Nombre",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+    <div>
+      <%= f.label :symbol, "Simbolo", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :symbol, required: true, placeholder: "Simbolo",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+    <div>
+      <%= f.label :code, "Codigo", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :code, required: true, placeholder: "Codigo",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+  </div>
+  <input type="hidden" id="currency-original-code" name="currency-original-code">
+  <div class="flex justify-center mt-4">
+<!--    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out">-->
+<!--      <i class="fas fa-save mr-2"></i><span id="currency-form-button-text">Agregar Moneda</span>-->
+<!--    </button>-->
+    <%= f.submit 'Guardar Moneda', class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out flex items-center" %>
+    <% if !@currency.new_record? %>
+      <%= link_to new_currency_path,
+                  class: "bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out flex items-center ml-2",
+                  data: { turbo_frame: 'currency_form_container' } do %>
+        <i class="fas fa-times mr-2"></i>Cancelar
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

@@ -2,6 +2,7 @@ Rails.application.routes.draw do
 
   resources :transactions
   resources :users
+  resources :currencies
   root 'dashboard#index'
   get '/administracion', to: 'administration#index'
   get '/login',  to: 'sessions#new'

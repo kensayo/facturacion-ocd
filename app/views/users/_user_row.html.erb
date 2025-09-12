@@ -1,0 +1,20 @@
+<%# The ID here is crucial for Turbo Stream to target specific rows %>
+<tr id="<%= dom_id(user) %>">
+  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700"><%= user.full_name %></td>
+  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700"><%= user.house.shortname %></td>
+  <td class="px-4 py-3 text-left text-sm">
+    <%= link_to edit_user_path(user),
+                class: "text-indigo-600 hover:text-indigo-800 mr-3",
+                title: "Editar",
+                data: { turbo_frame: 'user_form_container' } do
+    %>
+      <i class="fas fa-edit"></i>
+    <% end %>
+
+    <%= form_with(url: user_path(user), method: :delete, local: true, data: { turbo_confirm: '¿Estás seguro de que quieres eliminar este usuario?' }, class: "inline-block") do |form| %>
+      <button type="submit" class="text-red-600 hover:text-red-800" title="Eliminar">
+        <i class="fas fa-trash"></i>
+      </button>
+    <% end %>
+  </td>
+</tr>

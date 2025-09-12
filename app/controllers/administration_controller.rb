@@ -4,6 +4,8 @@ class AdministrationController < ApplicationController
     @houses = House.all
     @users = User.all
     @user = User.new
+    @currencies = Currency.all
+    @currency = Currency.new
   end
 
   private

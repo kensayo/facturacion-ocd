@@ -1,17 +1,97 @@
-<%= form_with(model: user) do |form| %>
-  <% if user.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(user.errors.count, "error") %> prohibited this user from being saved:</h2>
+<div class="bg-white rounded-lg">
+  <h2 class="text-xl font-semibold text-gray-700 mb-4" id="form_title">
+    <% if @user.new_record? %>
+      Crear Nuevo Usuario
+    <% else %>
+      Editar Usuario
+    <% end %>
+  </h2>
 
-      <ul>
-        <% user.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
-
-  <div>
-    <%= form.submit %>
+<% if @user.errors.any? %>
+  <div id="error_explanation" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+    <p class="font-bold">Se encontraron <%= pluralize(@user.errors.count, "error") %>:</p>
+    <ul class="mt-2 list-disc list-inside">
+      <% @user.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
   </div>
 <% end %>
+
+<%# Add an ID to the form for easy targeting with Turbo Streams %>
+<%= form_with(model: @user, class: "mb-6 space-y-4",
+              id: (@user.new_record? ? "new_user_form" : "edit_user_form_#{@user.id}"),
+              data: { turbo_frame: 'user_form_container' }) do |f| %> <%# <-- Añadir data-turbo-frame al form_with %>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+      <%= f.label :name, "Nombre", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :name, required: true, placeholder: "Nombre",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div>
+      <%= f.label :lastname, "Apellido", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :lastname, required: true, placeholder: "Apellido",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div>
+      <%= f.label :username, "Usuario", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.text_field :username, required: true, placeholder: "Usuario",
+                       class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <% if @user.new_record? %>
+      <div>
+        <%= f.label :password, "Contraseña", class: "block text-sm font-medium text-gray-600 mb-1" %>
+        <%= f.password_field :password, required: true, placeholder: "Password",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, "Verifica Contraseña", class: "block text-sm font-medium text-gray-600 mb-1" %>
+        <%= f.password_field :password_confirmation, required: true, placeholder: "Password",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+    <% else %>
+      <div >
+        <%= f.label :password, "Nueva Contraseña (En blanco si no quieres cambiarla)",
+                    class: "block text-sm font-medium text-gray-600 mb-1" %>
+        <%= f.password_field :password, placeholder: "Nueva Contraseña",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+
+      <div>
+        <%= f.label :password_confirmation, "Verifica Nueva Contraseña", class: "block text-sm font-medium text-gray-600 mb-1" %>
+        <%= f.password_field :password_confirmation, placeholder: "Verifica Nueva Contraseña",
+                             class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :birthdate, "Fecha de Nacimiento", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.date_field :birthdate, required: true, class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" %>
+    </div>
+
+    <div class="md:col-span-2 lg:col-span-2">
+      <%= f.label :house_id, "Casa", class: "block text-sm font-medium text-gray-600 mb-1" %>
+      <%= f.collection_select :house_id, @houses, :id, :name,
+                              { required: true },
+                              { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
+    </div>
+  </div>
+  <div class="flex justify-center pt-4">
+    <%# Botón Guardar - DEBE SEGUIR SIENDO UN SUBMIT BUTTON %>
+    <%= f.submit 'Guardar Usuario', class: "bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out flex items-center" %>
+
+    <%# Botón Cancelar - Ahora un link_to %>
+    <% if !@user.new_record? %>
+      <%= link_to new_user_path, # <-- Cambiar a la ruta de creación de un nuevo usuario
+                  class: "bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-5 rounded-lg shadow transition duration-200 ease-in-out flex items-center ml-2",
+                  data: { turbo_frame: 'user_form_container' } do %> <%# <-- Cargar en el mismo Turbo Frame %>
+        <i class="fas fa-times mr-2"></i>Cancelar
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
+</div>
