@@ -2,10 +2,12 @@ class AdministrationController < ApplicationController
   before_action :validate_admin_user
   def index
     @houses = House.all
-    @users = User.all
     @user = User.new
+    @users = User.all
     @currencies = Currency.all
     @currency = Currency.new
+    @transaction_types = TransactionType.all
+    @transaction_type = TransactionType.new
   end
 
   private
