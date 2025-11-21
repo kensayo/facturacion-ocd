@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" class="light">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,5 +42,24 @@
 </div>
 
 <%= yield %>
+
+<script>
+  function hideMessage() {
+    const messageBox = document.getElementById('message-box');
+    if (messageBox) {
+      messageBox.classList.add('hidden');
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const messageBox = document.getElementById('message-box');
+    // Solo activar el temporizador si el cuadro de mensaje es visible
+    if (messageBox && !messageBox.classList.contains('hidden')) {
+      setTimeout(() => {
+        hideMessage();
+      }, 5000); // 5000 milisegundos = 5 segundos
+    }
+  });
+</script>
 </body>
 </html>

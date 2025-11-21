@@ -8,4 +8,4 @@ fi
 
   ./bin/rails db:prepare
 
-exec "${@}"
+exec bundle exec "${@}"

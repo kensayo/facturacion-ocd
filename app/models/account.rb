@@ -9,6 +9,6 @@ class Account < ApplicationRecord
           pastel-peach pastel-mint].freeze
 
   def pretty_balance
-    balance.to_s + ' ' + symbol
+    balance.round(2).to_s + ' ' + symbol
   end
 end

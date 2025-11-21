@@ -14,11 +14,34 @@ class Transaction < ApplicationRecord
   delegate :username, to: :user
   delegate :house, to: :user
 
+  after_create :update_balance
+  after_destroy :update_balance_on_destroy
+
   scope :gastos, -> { where(is_income: false) }
   scope :ingresos, -> { where(is_income: true) }
   scope :transactions_by_house, ->(house_users) { where(user: house_users) }
 
   def formatted_amount
     "#{amount} #{currency.symbol}"
+  end
+
+  def update_balance
+    current_balance = account.balance
+    if is_income
+      account.balance = current_balance + amount
+    else
+      account.balance = current_balance - amount
+    end
+    account.save
+  end
+
+  def update_balance_on_destroy
+    current_balance = account.balance
+    if is_income
+      account.balance = current_balance - amount
+    else
+      account.balance = current_balance + amount
+    end
+    account.save
   end
 end

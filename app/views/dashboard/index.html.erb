@@ -35,7 +35,7 @@
             <div>
               <%= f.label :is_income, "Tipo", class: "block text-sm font-medium text-gray-600 mb-1" %>
               <%= f.select :is_income,
-                           ['Ingreso', 'Egreso'],
+                           [['Ingreso', true], ['Egreso', false]],
                            { required: true },
                            { class: "w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white" } %>
             </div>
@@ -160,9 +160,6 @@
                           <%= transaction.formatted_amount %>
                         </td>
                         <td class="block md:table-cell px-3 py-2 text-left md:text-center text-sm before:content-['Acciones:'] before:font-medium before:mr-2 md:before:content-none">
-                          <button class="text-blue-500 hover:text-blue-700 mr-3" title="Editar" onclick="editTransaction()">
-                            <i class="fas fa-edit"></i>
-                          </button>
                           <%= button_to transaction_path(transaction),
                                         method: :delete,
                                         class: "text-red-500 hover:text-red-700",
