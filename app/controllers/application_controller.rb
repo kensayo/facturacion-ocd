@@ -2,6 +2,7 @@
 class ApplicationController < ActionController::Base # Asegúrate de que tus controladores de frontend hereden de Base
   # Si estás construyendo una API pura, tus controladores deberían heredar de ActionController::API y usar autenticación basada en tokens.
   # Pero para un frontend con sesiones, ActionController::Base es lo correcto.
+  # include Pagy::Backend
 
   # Hace que estos métodos estén disponibles tanto en controladores como en vistas
   helper_method :current_user, :logged_in?
